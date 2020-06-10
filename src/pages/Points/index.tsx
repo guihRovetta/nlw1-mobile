@@ -121,7 +121,8 @@ const Points = () => {
 
         <Text style={styles.title}>Bem vindo.</Text>
         <Text style={styles.description}>
-          Encontre no mapa um ponto de coleta.
+          Para encontrar um ponto de coleta, selecione um ou mais itens para
+          coleta.
         </Text>
 
         <View style={styles.mapContainer}>
