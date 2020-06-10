@@ -11,6 +11,7 @@ import {
   Linking,
 } from "react-native";
 import { RectButton } from "react-native-gesture-handler";
+import MapView, { Marker } from "react-native-maps";
 import api from "../../services/api";
 import * as MailComposer from "expo-mail-composer";
 
@@ -25,6 +26,8 @@ interface Data {
     name: string;
     email: string;
     whatsapp: string;
+    latitude: number;
+    longitude: number;
     city: string;
     uf: string;
   };
@@ -40,11 +43,25 @@ const Detail = () => {
 
   const routeParams = route.params as Params;
 
+  const [initialPosition, setInitialPosition] = useState<[number, number]>([
+    0,
+    0,
+  ]);
+
   useEffect(() => {
-    api.get(`points/${routeParams.point_id}`).then((response) => {
+    async function getPoint() {
+      const response = await api.get(`points/${routeParams.point_id}`);
+
       setData(response.data);
-    });
+    }
+    getPoint();
   }, []);
+
+  useEffect(() => {
+    if (data?.point) {
+      setInitialPosition([data.point.latitude, data.point.longitude]);
+    }
+  }, [data]);
 
   function handleNavigateBack() {
     navigation.goBack();
@@ -58,7 +75,7 @@ const Detail = () => {
 
   function handleComposeMail() {
     MailComposer.composeAsync({
-      subject: "Interesse na coleta de resíduos",
+      subject: `${data.point.name} - Interesse na coleta de resíduos`,
       recipients: [data.point.email],
     });
   }
@@ -83,8 +100,31 @@ const Detail = () => {
 
         <Text style={styles.pointName}>{data.point.name}</Text>
         <Text style={styles.pointItems}>
+          <Text>Coletamos: </Text>
           {data.items.map((item) => item.title).join(", ")}
         </Text>
+
+        <View style={styles.mapContainer}>
+          {initialPosition[0] !== 0 && (
+            <MapView
+              style={styles.map}
+              initialRegion={{
+                latitude: initialPosition[0],
+                longitude: initialPosition[1],
+                latitudeDelta: 0.014,
+                longitudeDelta: 0.014,
+              }}
+            >
+              <Marker
+                style={styles.mapMarker}
+                coordinate={{
+                  latitude: data.point.latitude,
+                  longitude: data.point.longitude,
+                }}
+              ></Marker>
+            </MapView>
+          )}
+        </View>
 
         <View style={styles.address}>
           <Text style={styles.addressTitle}>{data.point.city}</Text>
@@ -179,5 +219,23 @@ const styles = StyleSheet.create({
     color: "#FFF",
     fontSize: 16,
     fontFamily: "Roboto_500Medium",
+  },
+
+  mapContainer: {
+    flex: 1,
+    width: "100%",
+    borderRadius: 10,
+    overflow: "hidden",
+    marginTop: 16,
+  },
+
+  map: {
+    width: "100%",
+    height: "100%",
+  },
+
+  mapMarker: {
+    width: 90,
+    height: 80,
   },
 });
