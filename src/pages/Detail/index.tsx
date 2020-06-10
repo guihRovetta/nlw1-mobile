@@ -104,6 +104,11 @@ const Detail = () => {
           {data.items.map((item) => item.title).join(", ")}
         </Text>
 
+        <View style={styles.address}>
+          <Text style={styles.addressTitle}>{data.point.city}</Text>
+          <Text style={styles.addressContent}>{data.point.uf}</Text>
+        </View>
+
         <View style={styles.mapContainer}>
           {initialPosition[0] !== 0 && (
             <MapView
@@ -124,11 +129,6 @@ const Detail = () => {
               ></Marker>
             </MapView>
           )}
-        </View>
-
-        <View style={styles.address}>
-          <Text style={styles.addressTitle}>{data.point.city}</Text>
-          <Text style={styles.addressContent}>{data.point.uf}</Text>
         </View>
       </View>
       <View style={styles.footer}>

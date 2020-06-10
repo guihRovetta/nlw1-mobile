@@ -98,7 +98,7 @@ const Home = () => {
         <View style={styles.footer}>
           <RNPickerSelect
             placeholder={{
-              label: "Selecione uma UF",
+              label: "Selecione uma UF*",
               value: null,
             }}
             items={ufs}
@@ -110,7 +110,7 @@ const Home = () => {
           />
           <RNPickerSelect
             placeholder={{
-              label: "Selecione uma cidade",
+              label: "Selecione uma cidade*",
               value: null,
             }}
             items={cities}
